@@ -1,46 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Rocha's English Class: B1 Listening Test</title>
+    <title>Mr. Rocha’s English Class: B1 Listening Test</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- html2pdf.js for PDF Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- Font Awesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <meta name="color-scheme" content="dark">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#00F0FF',
-                        secondary: '#B026FF',
-                        dark: '#050510',
-                        card: '#131A2A',
-                        accent: '#00FF9F',
-                        danger: '#FF003C',
+                        neon: { blue: '#38bdf8', purple: '#c084fc', green: '#4ade80', red: '#f87171' },
+                        glass: { 100: 'rgba(255, 255, 255, 0.1)', 200: 'rgba(255, 255, 255, 0.05)' }
                     }
                 }
             }
@@ -48,885 +27,844 @@
     </script>
     <style>
         body {
-            background-color: #050510;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(176, 38, 255, 0.1), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.15), transparent 25%),
-                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
-            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
         }
         .glass-panel {
-            background: rgba(19, 26, 42, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
-        .futuristic-border {
-            position: relative;
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
+        .input-futuristic {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: white;
+            transition: all 0.3s ease;
         }
-        .futuristic-border::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #00F0FF, #B026FF, #00F0FF);
-            background-size: 200% auto;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 0 15px #00F0FF;
-            animation: gradientMove 3s linear infinite;
-        }
-        @keyframes gradientMove {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-        
-        /* Custom Audio Player Styling */
-        audio {
-            width: 100%;
-            height: 40px;
-            border-radius: 8px;
+        .input-futuristic:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
             outline: none;
-            filter: invert(90%) hue-rotate(180deg);
+        }
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn.selected {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .option-btn.correct { background: rgba(74, 222, 128, 0.2); border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+        .option-btn.incorrect { background: rgba(248, 113, 113, 0.2); border-color: #f87171; box-shadow: 0 0 15px rgba(248, 113, 113, 0.4); }
+        
+        .input-futuristic::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
         }
 
-        /* PDF specific styles */
-        #pdf-container {
-            display: none;
-        }
-        .pdf-mode #pdf-container {
-            display: block;
-            background: #050510;
-            padding: 40px;
-            width: 100%;
-            color: #e2e8f0;
-        }
-        .pdf-page-break {
-            page-break-before: always;
-        }
-        
-        /* Bar Chart Animation */
-        @keyframes growUp {
-            from { height: 0; }
-        }
-        .animate-bar {
-            animation: growUp 1s ease-out forwards;
+        /* PDF specific styles to ensure good rendering */
+        #pdf-report-container {
+            background-color: #ffffff;
+            color: #000000;
         }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="custom-scrollbar text-slate-200">
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+    <div class="fixed top-0 left-0 w-full z-50 glass-panel border-b border-slate-700">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-headphones text-neon-blue text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-purple">
+                    Mr. Rocha’s English Class
+                </h1>
+            </div>
+            <div id="timer-display" class="hidden flex items-center gap-2 text-xl font-mono text-neon-blue bg-slate-900 px-4 py-1 rounded-full border border-slate-700 shadow-[0_0_10px_rgba(56,189,248,0.3)]">
+                <i class="fa-regular fa-clock"></i> <span id="time">40:00</span>
+            </div>
+        </div>
+        <div class="w-full h-1 bg-slate-800">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-neon-blue to-neon-purple w-0 transition-all duration-500"></div>
+        </div>
+    </div>
 
-        // --- DATA & KEYS ---
-        const ANSWER_KEYS = {
-            1: 'B', 2: 'B', 3: 'A', 4: 'C', 5: 'B', 6: 'B', 7: 'C',
-            8: 'A', 9: 'B', 10: 'C', 11: 'A', 12: 'A', 13: 'A',
-            20: 'C', 21: 'A', 22: 'B', 23: 'A', 24: 'A', 25: 'C'
+    <div id="audio-container" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 glass-panel rounded-full px-6 py-2 flex items-center gap-4">
+        <span class="text-sm font-semibold text-neon-blue">Main Track</span>
+        <!-- Audio continues playing regardless of section -->
+        <audio id="main-audio" controls class="h-8 w-64 rounded-full">
+            <source src="audio1.mp3" type="audio/mpeg">
+            <source src="audio1.wav" type="audio/wav">
+            <source src="audio1.m4a" type="audio/mp4">
+            <source src="audio1.ogg" type="audio/ogg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <div class="max-w-4xl mx-auto pt-24 pb-32 px-4">
+        
+        <!-- ================= SECTION 0: INTRO ================= -->
+        <div id="section-0" class="glass-panel rounded-2xl p-8 mb-8 animate-fade-in text-center">
+            <h2 class="text-3xl font-bold mb-2">B1 Listening Test</h2>
+            <p class="text-slate-400 mb-8">Welcome. Please enter your details to begin the 40-minute assessment.</p>
+            
+            <div class="flex flex-col md:flex-row justify-center gap-6 mb-8 max-w-xl mx-auto">
+                <div class="flex-1 text-left">
+                    <label class="block text-sm font-medium mb-1 text-neon-blue">Full Name</label>
+                    <input type="text" id="student-name" class="input-futuristic w-full p-3 rounded-xl" placeholder="e.g. John Doe">
+                </div>
+                <div class="flex-1 text-left">
+                    <label class="block text-sm font-medium mb-1 text-neon-blue">Date</label>
+                    <input type="date" id="student-date" class="input-futuristic w-full p-3 rounded-xl cursor-pointer">
+                </div>
+            </div>
+
+            <div class="mb-8 rounded-xl overflow-hidden border border-slate-700 max-w-2xl mx-auto">
+                <img src="imagea.jpg" onerror="this.src='https://placehold.co/800x400/0f172a/38bdf8?text=Welcome+to+Class'" alt="Class Image" class="w-full h-auto object-cover">
+            </div>
+
+            <button onclick="startTest()" class="bg-gradient-to-r from-neon-blue to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold py-3 px-12 rounded-full shadow-[0_0_20px_rgba(56,189,248,0.5)] transition-all transform hover:scale-105">
+                Start Test <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- ================= SECTION 1: PART 1 ================= -->
+        <div id="section-1" class="hidden test-section glass-panel rounded-2xl p-6 md:p-8 mb-8">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h2 class="text-2xl font-bold text-neon-blue">Part 1</h2>
+                <span class="bg-slate-800 text-sm px-3 py-1 rounded-full border border-slate-600">Questions 1 – 7</span>
+            </div>
+            <p class="text-lg mb-6">For each question, choose A, B, or C.</p>
+
+            <div class="space-y-12">
+                <!-- Q1 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">1. What did the girl buy on her shopping trip?</p>
+                    <img src="image1.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+1'" alt="Question 1 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-1">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(1, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(1, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(1, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q2 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">2. Why did the plane leave late?</p>
+                    <img src="image2.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+2'" alt="Question 2 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-2">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(2, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(2, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(2, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q3 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">3. What activity does the woman want to book for the weekend?</p>
+                    <img src="image3.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+3'" alt="Question 3 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-3">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(3, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(3, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(3, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q4 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">4. Which cake will the girl order?</p>
+                    <img src="image4.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+4'" alt="Question 4 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-4">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(4, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(4, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(4, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q5 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">5. How much must customers spend to get a free gift?</p>
+                    <img src="image5.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+5'" alt="Question 5 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-5">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(5, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(5, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(5, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q6 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">6. What did the family do on Sunday?</p>
+                    <img src="image6.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+6'" alt="Question 6 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-6">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(6, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(6, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(6, 'C', 1)">C</button>
+                    </div>
+                </div>
+                <!-- Q7 -->
+                <div class="q-block flex flex-col items-center text-center">
+                    <p class="text-xl font-medium mb-4 w-full text-left">7. Which programme is on first?</p>
+                    <img src="image7.jpg" onerror="this.src='https://placehold.co/600x300/1e293b/94a3b8?text=Image+7'" alt="Question 7 Image" class="w-full h-auto rounded-xl border border-slate-600 mb-4">
+                    <div class="flex gap-24 w-full max-w-2xl" id="opts-7">
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(7, 'A', 1)">A</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(7, 'B', 1)">B</button>
+                        <button class="option-btn flex-1 py-3 border border-slate-600 rounded-xl font-bold text-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(7, 'C', 1)">C</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-700 flex justify-between items-center">
+                <div></div>
+                <div class="flex gap-4">
+                    <button id="check-btn-1" onclick="checkSectionAnswers(1)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-full transition-all">Check Answers</button>
+                    <button onclick="navSection(2)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-full transition-all">Next Part <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 2: PART 2 ================= -->
+        <div id="section-2" class="hidden test-section glass-panel rounded-2xl p-6 md:p-8 mb-8">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h2 class="text-2xl font-bold text-neon-blue">Part 2</h2>
+                <span class="bg-slate-800 text-sm px-3 py-1 rounded-full border border-slate-600">Questions 8 – 13</span>
+            </div>
+            <p class="text-lg mb-6">For each question, choose the correct answer.</p>
+
+            <div class="space-y-8">
+                <!-- Q8 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">8. You will hear two friends talking about a new clothes shop. What does the girl say about it?</p>
+                    <div class="flex flex-col gap-2" id="opts-8">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(8, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> The staff are helpful.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(8, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> It only has the latest fashions.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(8, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> Prices are reduced at the moment.</button>
+                    </div>
+                </div>
+                <!-- Q9 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">9. You will hear two friends talking about a pop band’s website. They think the site would be better if</p>
+                    <div class="flex flex-col gap-2" id="opts-9">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(9, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> its information was up to date.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(9, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> it was easier to buy concert tickets.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(9, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> the band members answered messages.</button>
+                    </div>
+                </div>
+                <!-- Q10 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">10. You will hear a woman telling a friend about an art competition she’s won. How does she feel about it?</p>
+                    <div class="flex flex-col gap-2" id="opts-10">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(10, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> upset that the prize isn’t valuable</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(10, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> excited that the judges liked her picture</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(10, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> disappointed that she can’t use the prize</button>
+                    </div>
+                </div>
+                <!-- Q11 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">11. You will hear two friends talking about the girl’s flatmate. The girl thinks that her flatmate</p>
+                    <div class="flex flex-col gap-2" id="opts-11">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(11, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> is too untidy.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(11, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> talks too much.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(11, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> plays music too loud.</button>
+                    </div>
+                </div>
+                <!-- Q12 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">12. You will hear two friends talking about a football match. They agree that their team lost because</p>
+                    <div class="flex flex-col gap-2" id="opts-12">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(12, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> the players weren’t confident enough.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(12, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> they were missing some key players.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(12, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> the players didn’t do the right training.</button>
+                    </div>
+                </div>
+                <!-- Q13 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">13. You will hear two friends talking about a tennis match they played. The boy wants the girl to</p>
+                    <div class="flex flex-col gap-2" id="opts-13">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(13, 'A', 2)"><span class="font-bold mr-2 text-neon-blue">A</span> help him to get fitter.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(13, 'B', 2)"><span class="font-bold mr-2 text-neon-blue">B</span> practise with him more often.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(13, 'C', 2)"><span class="font-bold mr-2 text-neon-blue">C</span> enter more competitions with him.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-700 flex justify-between items-center">
+                <button onclick="navSection(1)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-6 rounded-full border border-slate-600 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i> Previous</button>
+                <div class="flex gap-4">
+                    <button id="check-btn-2" onclick="checkSectionAnswers(2)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-full transition-all">Check Answers</button>
+                    <button onclick="navSection(3)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-full transition-all">Next Part <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 3: PART 3 ================= -->
+        <div id="section-3" class="hidden test-section glass-panel rounded-2xl p-6 md:p-8 mb-8">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h2 class="text-2xl font-bold text-neon-blue">Part 3</h2>
+                <span class="bg-slate-800 text-sm px-3 py-1 rounded-full border border-slate-600">Questions 14 – 19</span>
+            </div>
+            <p class="text-lg mb-4">For each question, write the correct answer in the gap. Write <strong>one or two words</strong> or a number or a date or a time.</p>
+            <p class="text-md text-slate-400 mb-6 italic">You will hear a radio presenter called Anita talking about her holiday in Cuba.</p>
+
+            <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-xl space-y-6 text-lg leading-relaxed">
+                <h3 class="text-xl font-bold text-center text-neon-purple mb-4 border-b border-slate-600 pb-2">ANITA’S HOLIDAY IN CUBA</h3>
+                
+                <div>
+                    In the National Gardens, the 
+                    <input type="text" id="q14" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(14, this.value, 3)">
+                    was the thing that attracted most people.
+                </div>
+                <div>
+                    On the swimming trip, electronic armbands kept the 
+                    <input type="text" id="q15" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(15, this.value, 3)">
+                    away.
+                </div>
+                <div>
+                    On the day in the countryside, Anita almost fell off a 
+                    <input type="text" id="q16" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(16, this.value, 3)">.
+                </div>
+                <div>
+                    In the capital city, Anita saw a 
+                    <input type="text" id="q17" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(17, this.value, 3)">
+                    in a theatre.
+                </div>
+                <div>
+                    Anita enjoyed visiting a farm where 
+                    <input type="text" id="q18" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(18, this.value, 3)">
+                    is produced.
+                </div>
+                <div>
+                    Anita bought some 
+                    <input type="text" id="q19" class="input-futuristic w-48 mx-2 px-3 py-1 rounded-md text-center" onchange="saveTextAnswer(19, this.value, 3)">
+                    as gifts.
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-700 flex justify-between items-center">
+                <button onclick="navSection(2)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-6 rounded-full border border-slate-600 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i> Previous</button>
+                <div class="flex gap-4">
+                    <button id="check-btn-3" onclick="checkSectionAnswers(3)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-full transition-all">Check Answers</button>
+                    <button onclick="navSection(4)" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-full transition-all">Next Part <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 4: PART 4 ================= -->
+        <div id="section-4" class="hidden test-section glass-panel rounded-2xl p-6 md:p-8 mb-8">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h2 class="text-2xl font-bold text-neon-blue">Part 4</h2>
+                <span class="bg-slate-800 text-sm px-3 py-1 rounded-full border border-slate-600">Questions 20 – 25</span>
+            </div>
+            <p class="text-lg mb-4">For each question, choose the correct answer.</p>
+            <p class="text-md text-slate-400 mb-6 italic">You will hear an interview with a woman called Vicky Prince, a champion swimmer who now works as a swimming coach.</p>
+
+            <div class="space-y-8">
+                <!-- Q20 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">20. Vicky first went in for competitions because</p>
+                    <div class="flex flex-col gap-2" id="opts-20">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(20, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> she had joined a swimming club.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(20, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> her parents were keen on swimming.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(20, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> her swimming teacher encouraged her.</button>
+                    </div>
+                </div>
+                <!-- Q21 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">21. As a teenager, Vicky’s training involved</p>
+                    <div class="flex flex-col gap-2" id="opts-21">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(21, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> exercising on land as well as in the water.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(21, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> going without meals during the day.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(21, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> travelling to a pool once a day.</button>
+                    </div>
+                </div>
+                <!-- Q22 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">22. What did Vicky find hard about her training programme?</p>
+                    <div class="flex flex-col gap-2" id="opts-22">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(22, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> She couldn’t go on school trips.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(22, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> She lost some of her friends.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(22, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> She missed lots of parties.</button>
+                    </div>
+                </div>
+                <!-- Q23 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">23. What helped Vicky to do well in the national finals?</p>
+                    <div class="flex flex-col gap-2" id="opts-23">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(23, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> She was not expected to win.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(23, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> She trained harder than usual.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(23, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> She wanted to take a cup home.</button>
+                    </div>
+                </div>
+                <!-- Q24 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">24. As a swimming coach, Vicky thinks she’s best at teaching people</p>
+                    <div class="flex flex-col gap-2" id="opts-24">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(24, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> to deal with failure.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(24, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> to improve their technique.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(24, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> to get swimming qualifications.</button>
+                    </div>
+                </div>
+                <!-- Q25 -->
+                <div class="q-block">
+                    <p class="text-lg font-medium mb-3">25. Why has Vicky started doing long-distance swimming?</p>
+                    <div class="flex flex-col gap-2" id="opts-25">
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(25, 'A', 4)"><span class="font-bold mr-2 text-neon-blue">A</span> She needed to get fit again.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(25, 'B', 4)"><span class="font-bold mr-2 text-neon-blue">B</span> She thought it would be fun.</button>
+                        <button class="option-btn text-left px-4 py-3 border border-slate-600 rounded-xl bg-slate-800/50 hover:bg-slate-700" onclick="selectOption(25, 'C', 4)"><span class="font-bold mr-2 text-neon-blue">C</span> She wanted to do some travelling.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-700 flex justify-between items-center">
+                <button onclick="navSection(3)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-6 rounded-full border border-slate-600 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i> Previous</button>
+                <div class="flex gap-4">
+                    <button id="check-btn-4" onclick="checkSectionAnswers(4)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-full transition-all">Check Answers</button>
+                    <button onclick="navSection(5)" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all">Finish & Submit <i class="fa-solid fa-check ml-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 5: SUBMIT ================= -->
+        <div id="section-5" class="hidden test-section glass-panel rounded-2xl p-8 mb-8 text-center">
+            <i class="fa-solid fa-flag-checkered text-6xl text-neon-purple mb-6"></i>
+            <h2 class="text-3xl font-bold mb-4">Ready to Submit?</h2>
+            <p class="text-slate-300 mb-8 max-w-lg mx-auto">You have reached the end of the test. Once you submit, your final score will be calculated, and a PDF report will be generated automatically.</p>
+            
+            <div class="flex justify-center gap-6">
+                <button onclick="navSection(4)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 px-8 rounded-full border border-slate-600 transition-all">Go Back</button>
+                <button onclick="submitTest()" class="bg-gradient-to-r from-neon-purple to-pink-600 hover:from-pink-500 hover:to-pink-600 text-white font-bold py-3 px-12 rounded-full shadow-[0_0_20px_rgba(192,132,252,0.6)] transition-all transform hover:scale-105">
+                    Submit Test
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 6: RESULTS & PDF TEMPLATE ================= -->
+        <div id="section-6" class="hidden text-slate-900">
+            <!-- This container will be styled nicely for screen AND used for PDF capture via html2canvas -->
+            <div id="pdf-report-container" class="bg-white rounded-xl shadow-2xl p-8 md:p-12 mx-auto max-w-[800px] border-t-8 border-blue-600 relative overflow-hidden">
+                
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transform translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transform -translate-x-1/2 translate-y-1/2"></div>
+
+                <div class="relative z-10">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 text-center font-bold">
+                        <i class="fa-brands fa-whatsapp mr-2"></i> Send PDF results by WhatsApp to Mr. Rocha to get credit: 33-3497-1997
+                    </div>
+
+                    <div class="border-b-2 border-slate-200 pb-6 mb-6 flex justify-between items-end">
+                        <div>
+                            <h1 class="text-3xl font-bold text-slate-800 mb-2">B1 Listening Test Results</h1>
+                            <p class="text-slate-500 font-medium">Mr. Rocha’s English Class</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-slate-800" id="res-name">Student Name</p>
+                            <p class="text-slate-500" id="res-date">Date</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-8 mb-8 items-center justify-center">
+                        <div class="w-48 h-48 relative">
+                            <canvas id="scoreChart"></canvas>
+                            <div class="absolute inset-0 flex items-center justify-center flex-col">
+                                <span class="text-4xl font-bold text-slate-800" id="res-percentage">0%</span>
+                                <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Score</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 w-full max-w-sm">
+                            <canvas id="partChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-100">
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center"><i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i> Teacher's Recommendations</h3>
+                        <ul id="recommendations-list" class="space-y-3 text-sm text-slate-700 list-disc pl-5">
+                            <!-- Recommendations generated here -->
+                        </ul>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Detailed Responses</h3>
+                    <div id="detailed-responses" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                 <button onclick="downloadPDF()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all text-lg">
+                    <i class="fa-solid fa-download mr-2"></i> Download PDF Manually
+                </button>
+                <p class="text-slate-400 mt-4">The PDF should have downloaded automatically. If not, click above.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data Structure & State
+        const correctAnswers = {
+            1: 'B', 2: 'B', 3: 'A', 4: 'C', 5: 'B', 6: 'B', 7: 'C', // Part 1
+            8: 'A', 9: 'B', 10: 'C', 11: 'A', 12: 'A', 13: 'A', // Part 2
+            // Part 3 Arrays (accepting partial matches)
+            14: ['waterfall'], 15: ['shark'], 16: ['horse'], 17: ['musical', 'show', 'play'], 18: ['sugar'], 19: ['ring'],
+            20: 'C', 21: 'A', 22: 'B', 23: 'A', 24: 'A', 25: 'C' // Part 4
         };
 
-        const checkPart3Answer = (num, val) => {
-            if(!val) return false;
-            const text = val.toLowerCase().trim();
-            switch(num) {
-                case 14: return text.includes('waterfall');
-                case 15: return text.includes('shark');
-                case 16: return text.includes('horse');
-                case 17: return text.includes('musical') || text.includes('show') || text.includes('play');
-                case 18: return text.includes('sugar');
-                case 19: return text.includes('ring');
-                default: return false;
+        const partRanges = {
+            1: [1, 7], 2: [8, 13], 3: [14, 19], 4: [20, 25]
+        };
+
+        let userAnswers = {};
+        let sectionChecked = { 1: false, 2: false, 3: false, 4: false };
+        let currentSection = 0;
+        let timerInterval;
+        let timeLeft = 40 * 60; // 40 minutes in seconds
+
+        // Initialize userAnswers with blanks
+        for (let i = 1; i <= 25; i++) { userAnswers[i] = ""; }
+
+        // Start Test
+        function startTest() {
+            const name = document.getElementById('student-name').value.trim();
+            const date = document.getElementById('student-date').value;
+            
+            if (!name || !date) {
+                showMessage("Please enter your name and select a date before starting.");
+                return;
             }
-        };
+            
+            document.getElementById('timer-display').classList.remove('hidden');
+            document.getElementById('audio-container').classList.remove('hidden');
+            document.getElementById('main-audio').play().catch(e => console.log("Auto-play prevented"));
+            
+            startTimer();
+            navSection(1);
+        }
 
-        const TOTAL_QUESTIONS = 25;
-        const SECTION_QUESTIONS = {
-            1: [1,2,3,4,5,6,7],
-            2: [8,9,10,11,12,13],
-            3: [14,15,16,17,18,19],
-            4: [20,21,22,23,24,25]
-        };
+        // Custom Message Box
+        function showMessage(msg) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in';
+            overlay.innerHTML = `
+                <div class="glass-panel p-8 rounded-2xl max-w-sm w-full text-center border-t-4 border-neon-blue transform transition-all scale-100">
+                    <i class="fa-solid fa-circle-exclamation text-4xl text-neon-blue mb-4"></i>
+                    <p class="text-lg mb-6">${msg}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="bg-neon-blue hover:bg-blue-400 text-slate-900 font-bold py-2 px-8 rounded-full">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
 
-        const App = () => {
-            const [step, setStep] = useState(0); // 0: Intro, 1-4: Parts, 5: Results
-            const [user, setUser] = useState({ name: '', date: '' });
-            const [answers, setAnswers] = useState({});
-            const [checkedStatus, setCheckedStatus] = useState({ 1: false, 2: false, 3: false, 4: false });
-            const [timeLeft, setTimeLeft] = useState(40 * 60); // 40 minutes in seconds
-            const [timerActive, setTimerActive] = useState(false);
-            const [resultsData, setResultsData] = useState(null);
-            const [generatingPDF, setGeneratingPDF] = useState(false);
+        function navSection(sectionNum) {
+            document.querySelectorAll('div[id^="section-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('section-' + sectionNum).classList.remove('hidden');
+            currentSection = sectionNum;
+            
+            // Update Progress bar
+            let progress = (sectionNum / 5) * 100;
+            if(sectionNum === 6) progress = 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            window.scrollTo(0, 0);
+        }
 
-            // Timer Logic
-            useEffect(() => {
-                let interval;
-                if (timerActive && timeLeft > 0) {
-                    interval = setInterval(() => {
-                        setTimeLeft(prev => prev - 1);
-                    }, 1000);
-                } else if (timeLeft === 0 && timerActive) {
-                    setTimerActive(false);
+        function startTimer() {
+            const timeDisplay = document.getElementById('time');
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showMessage("Time is up! Submitting your test automatically.");
                     submitTest();
+                    return;
                 }
-                return () => clearInterval(interval);
-            }, [timerActive, timeLeft]);
-
-            const formatTime = (seconds) => {
-                const m = Math.floor(seconds / 60);
-                const s = seconds % 60;
-                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            };
-
-            const handleStart = (e) => {
-                e.preventDefault();
-                if(user.name && user.date) {
-                    setStep(1);
-                    setTimerActive(true);
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timeDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                if(timeLeft < 300) { // last 5 minutes
+                    timeDisplay.parentElement.classList.add('text-neon-red', 'border-neon-red');
+                    timeDisplay.parentElement.classList.remove('text-neon-blue', 'border-slate-700');
                 }
-            };
+            }, 1000);
+        }
 
-            const handleAnswer = (qNum, val) => {
-                // Prevent changing if section is already checked
-                const currentPart = step;
-                if(checkedStatus[currentPart]) return;
+        function selectOption(qNum, option, part) {
+            if (sectionChecked[part]) return; // locked
+            
+            userAnswers[qNum] = option;
+            
+            // UI Update
+            const container = document.getElementById(`opts-${qNum}`);
+            const buttons = container.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Find clicked button based on text content (A, B, or C)
+            buttons.forEach(btn => {
+                if(btn.textContent.trim().startsWith(option) || btn.textContent.trim() === option) {
+                    btn.classList.add('selected');
+                }
+            });
+        }
+
+        function saveTextAnswer(qNum, val, part) {
+            if (sectionChecked[part]) return;
+            userAnswers[qNum] = val.trim();
+        }
+
+        function checkSectionAnswers(part) {
+            sectionChecked[part] = true;
+            document.getElementById(`check-btn-${part}`).style.display = 'none'; // Hide button
+
+            const [start, end] = partRanges[part];
+            
+            for (let i = start; i <= end; i++) {
+                let isCorrect = false;
                 
-                setAnswers(prev => ({ ...prev, [qNum]: val }));
-            };
-
-            const checkSection = (partNum) => {
-                setCheckedStatus(prev => ({ ...prev, [partNum]: true }));
-            };
-
-            const calculateResults = () => {
-                let correctCount = 0;
-                let sectionScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-                
-                // Parts 1, 2, 4
-                [1, 2, 4].forEach(part => {
-                    SECTION_QUESTIONS[part].forEach(q => {
-                        if (answers[q] === ANSWER_KEYS[q]) {
-                            correctCount++;
-                            sectionScores[part]++;
+                if (part === 3) {
+                    // Text validation
+                    const inputEl = document.getElementById(`q${i}`);
+                    inputEl.disabled = true;
+                    inputEl.classList.remove('input-futuristic');
+                    
+                    const userVal = userAnswers[i].toLowerCase();
+                    const validOptions = correctAnswers[i];
+                    
+                    isCorrect = validOptions.some(opt => userVal.includes(opt));
+                    
+                    if(isCorrect && userVal !== "") {
+                        inputEl.classList.add('bg-green-900/50', 'border-green-500', 'text-green-300');
+                    } else {
+                        inputEl.classList.add('bg-red-900/50', 'border-red-500', 'text-red-300');
+                        // Show correct answer tooltip
+                        inputEl.value = `${userAnswers[i]} (Ans: ${validOptions[0]})`;
+                    }
+                } else {
+                    // Multiple choice validation
+                    const userVal = userAnswers[i];
+                    const correctVal = correctAnswers[i];
+                    const container = document.getElementById(`opts-${i}`);
+                    const buttons = container.querySelectorAll('.option-btn');
+                    
+                    buttons.forEach(btn => {
+                        // Disable clicks visually and practically handled by sectionChecked
+                        btn.classList.add('opacity-80', 'cursor-not-allowed');
+                        
+                        const btnOption = btn.textContent.trim().charAt(0); // A, B, or C
+                        
+                        if (btnOption === correctVal) {
+                            btn.classList.add('correct');
+                        } else if (btnOption === userVal && userVal !== correctVal) {
+                            btn.classList.add('incorrect');
                         }
                     });
-                });
+                }
+            }
+        }
 
-                // Part 3
-                SECTION_QUESTIONS[3].forEach(q => {
-                    if (checkPart3Answer(q, answers[q])) {
-                        correctCount++;
-                        sectionScores[3]++;
-                    }
-                });
+        function submitTest() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').classList.add('hidden');
+            document.getElementById('audio-container').classList.add('hidden');
+            
+            // Lock all unchecked sections
+            [1, 2, 3, 4].forEach(p => { if(!sectionChecked[p]) checkSectionAnswers(p); });
 
-                const percentage = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+            // Calculate Scores
+            let totalCorrect = 0;
+            let partScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            let partTotals = { 1: 7, 2: 6, 3: 6, 4: 6 };
 
-                return {
-                    correctCount,
-                    total: TOTAL_QUESTIONS,
-                    percentage,
-                    sectionScores
-                };
-            };
+            for (let i = 1; i <= 25; i++) {
+                let part = i <= 7 ? 1 : i <= 13 ? 2 : i <= 19 ? 3 : 4;
+                let isCorrect = false;
 
-            const generateRecommendations = (scores) => {
-                const recs = [];
-                const p1Pct = scores[1] / 7;
-                const p2Pct = scores[2] / 6;
-                const p3Pct = scores[3] / 6;
-                const p4Pct = scores[4] / 6;
-
-                // Pool of recommendations based on section performance
-                if (p1Pct < 0.7) {
-                    recs.push("Review vocabulary related to everyday objects and daily activities (Part 1 focus).");
-                    recs.push("Practice identifying key differences between visual options while listening.");
+                if (part === 3) {
+                    const userVal = userAnswers[i].toLowerCase();
+                    isCorrect = correctAnswers[i].some(opt => userVal.includes(opt));
+                    if(isCorrect && userVal !== "") { totalCorrect++; partScores[part]++; }
                 } else {
-                    recs.push("Excellent work on identifying specific information from short dialogues!");
+                    if (userAnswers[i] === correctAnswers[i]) { totalCorrect++; partScores[part]++; }
                 }
+            }
 
-                if (p2Pct < 0.7) {
-                    recs.push("Focus on understanding the attitudes and opinions of speakers in short conversations.");
-                    recs.push("Listen to English podcasts and try to identify how the speakers feel about the topic.");
+            const percentage = Math.round((totalCorrect / 25) * 100);
+
+            // Update DOM Report View
+            document.getElementById('res-name').textContent = document.getElementById('student-name').value;
+            document.getElementById('res-date').textContent = document.getElementById('student-date').value;
+            document.getElementById('res-percentage').textContent = percentage + '%';
+
+            generateRecommendations(percentage, partScores, partTotals);
+            populateDetailedResponses();
+            navSection(6);
+
+            // Render Charts
+            renderCharts(totalCorrect, partScores);
+
+            // Auto Generate PDF after short delay to allow charts to render
+            setTimeout(() => {
+                downloadPDF();
+            }, 1000);
+        }
+
+        function generateRecommendations(percentage, partScores, partTotals) {
+            const list = document.getElementById('recommendations-list');
+            list.innerHTML = '';
+            let recs = [];
+
+            // General recommendations based on total score
+            if (percentage >= 90) {
+                recs.push("Excellent overall listening comprehension. Maintain this level by listening to native B2/C1 materials.");
+                recs.push("You show strong capability in understanding specific details and implied meanings.");
+            } else if (percentage >= 70) {
+                recs.push("Good job. You have a solid grasp of B1 listening skills, but keep practicing to avoid minor mistakes.");
+                recs.push("Try listening to BBC 6 Minute English to broaden your vocabulary context.");
+            } else {
+                recs.push("You need to allocate more time to listening practice. Start with slower audio and transcripts.");
+                recs.push("Focus heavily on identifying keywords before the audio begins.");
+            }
+
+            // Specific part recommendations
+            if (partScores[1] / partTotals[1] < 0.7) {
+                recs.push("Part 1: Practice analyzing visual cues quickly. Look at the images and predict vocabulary before listening.");
+                recs.push("Part 1: Pay attention to distractors; the speakers often mention all images, but only one is the final answer.");
+            }
+            if (partScores[2] / partTotals[2] < 0.7) {
+                recs.push("Part 2: Work on inferring feelings and attitudes, not just exact words.");
+                recs.push("Part 2: Practice listening to informal dialogues and note down phrases that express agreement or disagreement.");
+            }
+            if (partScores[3] / partTotals[3] < 0.7) {
+                recs.push("Part 3: Improve your spelling of common English words (days, months, numbers, objects).");
+                recs.push("Part 3: Listen carefully for specific nouns and numbers to fill in gaps exactly as you hear them.");
+            }
+            if (partScores[4] / partTotals[4] < 0.7) {
+                recs.push("Part 4: Focus on longer interviews. Try summarizing what a speaker says in your own words.");
+                recs.push("Part 4: Practice identifying the main point of a speaker's response amidst background information.");
+            }
+
+            // Fill to 8 recommendations if needed by pulling from a generic pool
+            const genericRecs = [
+                "Always read the questions fully before the audio starts.",
+                "Don't panic if you miss an answer; move immediately to the next question.",
+                "Use the second listening to confirm your answers, not to start answering.",
+                "Watch movies in English with English subtitles to improve sound-to-text recognition.",
+                "Listen to English podcasts during your daily commute."
+            ];
+
+            while(recs.length < 8) {
+                let randomRec = genericRecs[Math.floor(Math.random() * genericRecs.length)];
+                if(!recs.includes(randomRec)) recs.push(randomRec);
+            }
+
+            // Slice to exactly 8 and render
+            recs.slice(0, 8).forEach(rec => {
+                let li = document.createElement('li');
+                li.textContent = rec;
+                list.appendChild(li);
+            });
+        }
+
+        function populateDetailedResponses() {
+            const container = document.getElementById('detailed-responses');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 25; i++) {
+                let part = i <= 7 ? 1 : i <= 13 ? 2 : i <= 19 ? 3 : 4;
+                let userVal = userAnswers[i] || "-";
+                let correctVal = part === 3 ? correctAnswers[i][0] : correctAnswers[i];
+                let isCorrect = false;
+
+                if (part === 3) {
+                    isCorrect = userVal !== "-" && correctAnswers[i].some(opt => userVal.toLowerCase().includes(opt));
                 } else {
-                    recs.push("Great job understanding speakers' attitudes and agreements (Part 2).");
+                    isCorrect = userVal === correctVal;
                 }
 
-                if (p3Pct < 0.7) {
-                    recs.push("Practice spelling common words and writing down specific details like numbers and dates.");
-                    recs.push("Work on predicting the type of missing information before the audio starts.");
-                } else {
-                    recs.push("Strong spelling and detail-extraction skills shown in Part 3!");
+                let icon = isCorrect ? '<i class="fa-solid fa-check text-green-600"></i>' : '<i class="fa-solid fa-xmark text-red-500"></i>';
+                let colorClass = isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+
+                let div = document.createElement('div');
+                div.className = `p-2 rounded border ${colorClass} flex justify-between items-center`;
+                div.innerHTML = `
+                    <span class="font-medium text-slate-700">Q${i}: <span class="${isCorrect ? 'text-green-700' : 'text-red-600'}">${userVal}</span></span>
+                    <span class="text-xs text-slate-500 flex items-center gap-2">Correct: ${correctVal} ${icon}</span>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function renderCharts(totalCorrect, partScores) {
+            // Doughnut Chart (Overall)
+            const ctx1 = document.getElementById('scoreChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        data: [totalCorrect, 25 - totalCorrect],
+                        backgroundColor: ['#10b981', '#f43f5e'],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Bar Chart (Per Part)
+            const ctx2 = document.getElementById('partChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Part 1 (7)', 'Part 2 (6)', 'Part 3 (6)', 'Part 4 (6)'],
+                    datasets: [{
+                        label: 'Correct Answers',
+                        data: [partScores[1], partScores[2], partScores[3], partScores[4]],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 7, grid: { color: '#e2e8f0' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function downloadPDF() {
+            showMessage("Generating PDF Document... Please wait.");
+            const reportElement = document.getElementById('pdf-report-container');
+            
+            // We temporarily enforce specific dimensions for capturing if needed, but Tailwind handles it well.
+            html2canvas(reportElement, { scale: 2, useCORS: true, logging: false }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                // If the report exceeds 1 page, add another (though our UI is compact enough to fit 1 page usually)
+                if (pdfHeight > pdf.internal.pageSize.getHeight()) {
+                    // Quick fix: our A4 is ~297mm height. If it's longer, scale it to fit or leave as long page. 
+                    // Given constraints, a single scaled image on 1 page is acceptable for this report.
                 }
 
-                if (p4Pct < 0.7) {
-                    recs.push("Build stamina for longer audio recordings by listening to extended interviews.");
-                    recs.push("Practice distinguishing between general topics and detailed meaning in longer texts.");
-                } else {
-                    recs.push("Fantastic focus and comprehension during the long interview section!");
-                }
-
-                // Generic strong recommendations to reach 8 total
-                const generalRecs = [
-                    "Expose yourself to different English accents (British, American, Australian).",
-                    "Read the questions carefully before the audio begins to anticipate answers.",
-                    "Don't get stuck on one word you don't know; focus on the overall meaning.",
-                    "Watch English movies or series with English subtitles, then try without them.",
-                    "Practice taking quick, brief notes while listening.",
-                    "Review incorrect answers thoroughly to understand why the correct answer is right."
-                ];
-
-                while (recs.length < 8) {
-                    const randomRec = generalRecs[Math.floor(Math.random() * generalRecs.length)];
-                    if (!recs.includes(randomRec)) {
-                        recs.push(randomRec);
-                    }
-                }
-
-                return recs.slice(0, 8);
-            };
-
-            const submitTest = () => {
-                setTimerActive(false);
-                const res = calculateResults();
-                const recs = generateRecommendations(res.sectionScores);
-                setResultsData({ ...res, recommendations: recs });
-                setStep(5);
-                window.scrollTo(0, 0);
-            };
-
-            const exportPDF = () => {
-                setGeneratingPDF(true);
-                setTimeout(() => {
-                    const element = document.getElementById('pdf-content');
-                    const opt = {
-                        margin:       0.5,
-                        filename:     `Listening_Test_${user.name.replace(/\s+/g, '_')}.pdf`,
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true },
-                        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-                    };
-
-                    document.body.classList.add('pdf-mode');
-                    
-                    html2pdf().set(opt).from(element).save().then(() => {
-                        document.body.classList.remove('pdf-mode');
-                        setGeneratingPDF(false);
-                    });
-                }, 500);
-            };
-
-            const isCorrect = (qNum) => {
-                if(qNum >= 14 && qNum <= 19) {
-                    return checkPart3Answer(qNum, answers[qNum]);
-                }
-                return answers[qNum] === ANSWER_KEYS[qNum];
-            };
-
-            // ---- UI RENDER FUNCTIONS ----
-
-            const renderHeader = () => (
-                <header className="bg-[#0B0F19] border-b border-primary/30 text-white p-4 shadow-[0_4px_20px_rgba(0,240,255,0.15)] sticky top-0 z-50 backdrop-blur-md">
-                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <h1 className="text-xl md:text-2xl font-display font-bold text-primary drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]">Mr. Rocha's English Class</h1>
-                            <p className="text-sm text-secondary font-medium tracking-wider uppercase">B1 Listening Protocol</p>
-                        </div>
-                        {step > 0 && step < 5 && (
-                            <div className="flex items-center gap-6">
-                                <div className="text-right">
-                                    <p className="text-xs text-gray-400 uppercase tracking-widest">Operator</p>
-                                    <p className="font-semibold text-accent drop-shadow-[0_0_5px_rgba(0,255,159,0.5)]">{user.name}</p>
-                                </div>
-                                <div className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-xl border ${timeLeft < 300 ? 'bg-danger/20 text-danger border-danger shadow-[0_0_15px_rgba(255,0,60,0.4)]' : 'bg-primary/10 text-primary border-primary/50 shadow-[0_0_10px_rgba(0,240,255,0.3)]'}`}>
-                                    <i className="fa-solid fa-clock"></i>
-                                    {formatTime(timeLeft)}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </header>
-            );
-
-            const renderProgressBar = () => {
-                if(step === 0 || step === 5) return null;
-                return (
-                    <div className="max-w-4xl mx-auto mt-6 px-4">
-                        <div className="flex justify-between mb-2">
-                            {[1,2,3,4].map(p => (
-                                <span key={p} className={`text-sm font-bold uppercase tracking-wider ${step >= p ? 'text-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]' : 'text-slate-600'}`}>Sector {p}</span>
-                            ))}
-                        </div>
-                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden flex border border-slate-700">
-                            {[1,2,3,4].map(p => (
-                                <div key={p} className={`h-full flex-1 border-r border-slate-900 transition-all duration-500 ${step > p ? 'bg-secondary shadow-[0_0_10px_#B026FF]' : step === p ? 'bg-primary shadow-[0_0_10px_#00F0FF]' : 'bg-transparent'}`}></div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            };
-
-            const renderNavigationButtons = (partNum) => {
-                const isChecked = checkedStatus[partNum];
-                return (
-                    <div className="flex flex-wrap justify-between items-center mt-12 pt-6 border-t border-slate-700/50 gap-4">
-                        <button 
-                            onClick={() => { setStep(step - 1); window.scrollTo(0, 0); }}
-                            className="px-6 py-3 rounded-lg font-semibold text-gray-400 bg-slate-800 hover:text-white hover:border-primary/50 border border-slate-700 transition-all"
-                            disabled={step === 1}
-                        >
-                            <i className="fa-solid fa-arrow-left mr-2"></i> Previous
-                        </button>
-
-                        {!isChecked ? (
-                            <button 
-                                onClick={() => checkSection(partNum)}
-                                className="px-8 py-3 rounded-lg font-semibold text-white bg-secondary hover:bg-[#9015E0] shadow-[0_0_15px_rgba(176,38,255,0.5)] transition-all"
-                            >
-                                <i className="fa-solid fa-microchip mr-2"></i> Verify Data
-                            </button>
-                        ) : (
-                            <span className="px-6 py-3 rounded-lg font-semibold text-accent bg-accent/10 border border-accent/30 shadow-[0_0_10px_rgba(0,255,159,0.2)]">
-                                <i className="fa-solid fa-lock mr-2"></i> Data Locked
-                            </span>
-                        )}
-
-                        {step < 4 ? (
-                            <button 
-                                onClick={() => { setStep(step + 1); window.scrollTo(0, 0); }}
-                                className="px-6 py-3 rounded-lg font-bold text-black bg-primary hover:bg-[#00D0E0] shadow-[0_0_15px_rgba(0,240,255,0.6)] transition-all"
-                            >
-                                Next <i className="fa-solid fa-arrow-right ml-2"></i>
-                            </button>
-                        ) : (
-                            <button 
-                                onClick={submitTest}
-                                className="px-8 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all"
-                            >
-                                Initialize Uplink <i className="fa-solid fa-satellite-dish ml-2"></i>
-                            </button>
-                        )}
-                    </div>
-                );
-            };
-
-            const renderOptionButton = ({ qNum, val, text, isImage = false }) => {
-                const isSelected = answers[qNum] === val;
-                const isChecked = checkedStatus[step];
-                const correctAns = ANSWER_KEYS[qNum];
-                const isActuallyCorrect = isSelected && correctAns === val;
-                const isActuallyWrong = isSelected && correctAns !== val;
-                const missedCorrect = !isSelected && correctAns === val && isChecked;
-
-                let btnClass = "relative w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ";
-                if (isImage) {
-                    btnClass = "relative flex-1 p-3 rounded-xl border-2 transition-all duration-200 font-bold text-center justify-center ";
-                }
-
-                if (!isChecked) {
-                    btnClass += isSelected ? "border-primary bg-primary/10 text-primary shadow-[0_0_15px_rgba(0,240,255,0.3)]" : "border-slate-700 bg-slate-800/50 hover:border-primary/50 hover:bg-slate-800 hover:shadow-[0_0_15px_rgba(0,240,255,0.1)] text-gray-300";
-                } else {
-                    if (isActuallyCorrect) btnClass += "border-accent bg-accent/10 text-accent shadow-[0_0_15px_rgba(0,255,159,0.3)]";
-                    else if (isActuallyWrong) btnClass += "border-danger bg-danger/10 text-danger shadow-[0_0_15px_rgba(255,0,60,0.3)]";
-                    else if (missedCorrect) btnClass += "border-accent border-dashed bg-transparent text-accent";
-                    else btnClass += "border-slate-800 bg-slate-900/50 text-slate-600 opacity-50";
-                }
-
-                return (
-                    <button 
-                        onClick={() => handleAnswer(qNum, val)}
-                        disabled={isChecked}
-                        className={btnClass}
-                    >
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm border ${
-                            !isChecked ? (isSelected ? 'bg-primary text-black border-primary drop-shadow-[0_0_5px_rgba(0,0,0,0.5)]' : 'bg-slate-700 text-gray-400 border-slate-600') :
-                            (isActuallyCorrect || missedCorrect ? 'bg-accent text-black border-accent drop-shadow-[0_0_5px_rgba(0,0,0,0.5)]' : (isActuallyWrong ? 'bg-danger text-white border-danger drop-shadow-[0_0_5px_rgba(0,0,0,0.5)]' : 'bg-slate-800 text-slate-500 border-slate-700'))
-                        }`}>
-                            {val}
-                        </span>
-                        {text && <span className="flex-1 font-medium">{text}</span>}
-                        
-                        {isChecked && isActuallyCorrect && <i className="fa-solid fa-check text-accent drop-shadow-[0_0_5px_rgba(0,255,159,0.8)] absolute right-4 text-xl"></i>}
-                        {isChecked && isActuallyWrong && <i className="fa-solid fa-xmark text-danger drop-shadow-[0_0_5px_rgba(255,0,60,0.8)] absolute right-4 text-xl"></i>}
-                        {isChecked && missedCorrect && <i className="fa-solid fa-arrow-left text-accent drop-shadow-[0_0_5px_rgba(0,255,159,0.8)] absolute right-4"></i>}
-                    </button>
-                );
-            };
-
-            const renderImageFallback = ({ src, alt, className = "max-w-sm h-48" }) => (
-                <div className={`w-full mx-auto bg-slate-800/50 rounded-lg border-2 border-dashed border-slate-600 flex flex-col items-center justify-center mb-4 overflow-hidden relative group ${className}`}>
-                    <img src={src} alt={alt} className="absolute inset-0 w-full h-full object-contain z-10" onError={(e) => e.target.style.display = 'none'} />
-                    <i className="fa-solid fa-satellite text-4xl text-slate-500 mb-2"></i>
-                    <span className="text-slate-400 font-medium font-mono text-sm tracking-widest">{src}</span>
-                </div>
-            );
-
-            // --- SCREENS ---
-
-            const renderIntroScreen = () => (
-                <div className="min-h-[80vh] flex items-center justify-center p-4">
-                    <div className="glass-panel futuristic-border p-8 md:p-12 rounded-2xl max-w-lg w-full text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full mix-blend-screen filter blur-[80px] opacity-20 transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-                        <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-primary/30 shadow-[0_0_30px_rgba(0,240,255,0.2)]">
-                            <i className="fa-solid fa-radar text-5xl text-primary drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]"></i>
-                        </div>
-                        <h2 className="text-3xl font-display font-bold text-white mb-2 tracking-wide">B1 Listening Protocol</h2>
-                        <p className="text-primary/80 font-mono mb-8 tracking-widest text-sm uppercase">40 Mins • 4 Sectors • 25 Nodes</p>
-                        
-                        <form onSubmit={handleStart} className="space-y-6 text-left relative z-10">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Operator Identity</label>
-                                <div className="relative">
-                                    <i className="fa-solid fa-user-astronaut absolute left-4 top-1/2 -translate-y-1/2 text-primary"></i>
-                                    <input 
-                                        type="text" 
-                                        required
-                                        className="w-full pl-11 pr-4 py-3 rounded-lg bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none"
-                                        placeholder="Enter designation"
-                                        value={user.name}
-                                        onChange={e => setUser({...user, name: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Star Date</label>
-                                <div className="relative">
-                                    <input 
-                                        type="date" 
-                                        required
-                                        className="w-full px-4 py-3 rounded-lg bg-slate-900/80 border border-slate-700 text-white focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all outline-none"
-                                        style={{ colorScheme: 'dark' }}
-                                        value={user.date}
-                                        onChange={e => setUser({...user, date: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-
-                            {renderImageFallback({ src: "imagea.jpg", alt: "Intro Graphic" })}
-
-                            <button type="submit" className="w-full py-4 rounded-lg font-bold text-black bg-primary hover:bg-[#00D0E0] shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] transition-all text-lg flex items-center justify-center gap-3 uppercase tracking-wider">
-                                Initiate Sequence <i className="fa-solid fa-rocket"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            );
-
-            const renderPart1 = () => (
-                <div className="max-w-4xl mx-auto p-4 py-8 animate-fade-in">
-                    <div className="bg-card rounded-2xl shadow-[0_0_30px_rgba(0,240,255,0.05)] border border-primary/20 p-6 md:p-8 mb-8">
-                        <h2 className="text-2xl font-display font-bold text-white mb-2 flex items-center gap-3">
-                            <span className="bg-primary text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(0,240,255,0.5)]">1</span>
-                            Sector 1
-                        </h2>
-                        <p className="text-gray-400 mb-6 font-medium">Nodes 1 – 7. For each node, engage sequence A, B, or C.</p>
-                        
-                        <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700 shadow-inner mb-8">
-                            <div className="flex items-center gap-3 mb-2 text-sm font-semibold text-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
-                                <i className="fa-solid fa-satellite-dish"></i> Access Audio Uplink 1
-                            </div>
-                            <audio controls src="audio1.mp3">Your browser does not support the audio element.</audio>
-                        </div>
-
-                        <div className="space-y-12">
-                            {[
-                                { q: 1, text: "What did the girl buy on her shopping trip?", img: "image1.jpg" },
-                                { q: 2, text: "Why did the plane leave late?", img: "image2.jpg" },
-                                { q: 3, text: "What activity does the woman want to book for the weekend?", img: "image3.jpg" },
-                                { q: 4, text: "Which cake will the girl order?", img: "image4.jpg" },
-                                { q: 5, text: "How much must customers spend to get a free gift?", img: "image5.jpg" },
-                                { q: 6, text: "What did the family do on Sunday?", img: "image6.jpg" },
-                                { q: 7, text: "Which programme is on first?", img: "image7.jpg" }
-                            ].map((item) => (
-                                <div key={item.q} className="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50 shadow-inner">
-                                    <h3 className="text-lg font-semibold text-gray-100 mb-4">{item.q}. {item.text}</h3>
-                                    {renderImageFallback({ src: item.img, alt: `Question ${item.q}`, className: "max-w-3xl h-96" })}
-                                    <div className="flex gap-12 mt-6 max-w-lg mx-auto">
-                                        {renderOptionButton({ qNum: item.q, val: "A", isImage: true })}
-                                        {renderOptionButton({ qNum: item.q, val: "B", isImage: true })}
-                                        {renderOptionButton({ qNum: item.q, val: "C", isImage: true })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        {renderNavigationButtons(1)}
-                    </div>
-                </div>
-            );
-
-            const renderPart2 = () => (
-                <div className="max-w-4xl mx-auto p-4 py-8">
-                    <div className="bg-card rounded-2xl shadow-[0_0_30px_rgba(0,240,255,0.05)] border border-primary/20 p-6 md:p-8 mb-8">
-                        <h2 className="text-2xl font-display font-bold text-white mb-2 flex items-center gap-3">
-                            <span className="bg-primary text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(0,240,255,0.5)]">2</span>
-                            Sector 2
-                        </h2>
-                        <p className="text-gray-400 mb-8 font-medium">Nodes 8 – 13. For each node, engage the correct protocol.</p>
-                        
-                        <div className="space-y-8">
-                            {[
-                                { q: 8, prompt: "You will hear two friends talking about a new clothes shop. What does the girl say about it?", opts: [{v:'A', t:'The staff are helpful.'}, {v:'B', t:'It only has the latest fashions.'}, {v:'C', t:'Prices are reduced at the moment.'}] },
-                                { q: 9, prompt: "You will hear two friends talking about a pop band’s website. They think the site would be better if", opts: [{v:'A', t:'its information was up to date.'}, {v:'B', t:'it was easier to buy concert tickets.'}, {v:'C', t:'the band members answered messages.'}] },
-                                { q: 10, prompt: "You will hear a woman telling a friend about an art competition she’s won. How does she feel about it?", opts: [{v:'A', t:'upset that the prize isn’t valuable'}, {v:'B', t:'excited that the judges liked her picture'}, {v:'C', t:'disappointed that she can’t use the prize'}] },
-                                { q: 11, prompt: "You will hear two friends talking about the girl’s flatmate. The girl thinks that her flatmate", opts: [{v:'A', t:'is too untidy.'}, {v:'B', t:'talks too much.'}, {v:'C', t:'plays music too loud.'}] },
-                                { q: 12, prompt: "You will hear two friends talking about a football match. They agree that their team lost because", opts: [{v:'A', t:'the players weren’t confident enough.'}, {v:'B', t:'they were missing some key players.'}, {v:'C', t:'the players didn’t do the right training.'}] },
-                                { q: 13, prompt: "You will hear two friends talking about a tennis match they played. The boy wants the girl to", opts: [{v:'A', t:'help him to get fitter.'}, {v:'B', t:'practise with him more often.'}, {v:'C', t:'enter more competitions with him.'}] }
-                            ].map((item) => (
-                                <div key={item.q} className="border-b border-slate-700/50 pb-8 last:border-0">
-                                    <h3 className="text-lg font-semibold text-gray-100 mb-4">{item.q}. {item.prompt}</h3>
-                                    <div className="space-y-3 pl-4 md:pl-8">
-                                        {item.opts.map(opt => (
-                                            <React.Fragment key={opt.v}>
-                                                {renderOptionButton({ qNum: item.q, val: opt.v, text: opt.t })}
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        {renderNavigationButtons(2)}
-                    </div>
-                </div>
-            );
-
-            const renderPart3 = () => (
-                <div className="max-w-4xl mx-auto p-4 py-8">
-                    <div className="bg-card rounded-2xl shadow-[0_0_30px_rgba(0,240,255,0.05)] border border-primary/20 p-6 md:p-8 mb-8">
-                        <h2 className="text-2xl font-display font-bold text-white mb-2 flex items-center gap-3">
-                            <span className="bg-primary text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(0,240,255,0.5)]">3</span>
-                            Sector 3
-                        </h2>
-                        <p className="text-gray-400 mb-2 font-medium">Nodes 14 – 19. For each node, inject the exact parameters.</p>
-                        <p className="text-sm text-secondary/80 mb-8 bg-secondary/10 p-3 rounded-lg border border-secondary/20"><i className="fa-solid fa-circle-info text-secondary mr-2"></i>Parameter limit: one or two words, a number, a date, or a time.</p>
-                        
-                        <div className="bg-slate-900/50 p-6 md:p-10 rounded-2xl border border-slate-700 shadow-inner">
-                            <h3 className="text-xl font-bold text-center mb-6 text-primary tracking-wide uppercase drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">Anita’s Holiday in Cuba Data Log</h3>
-                            <div className="space-y-6 text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-                                
-                                {[
-                                    { q: 14, pre: "In the National Gardens, the", post: "was the thing that attracted most people." },
-                                    { q: 15, pre: "On the swimming trip, electronic armbands kept the", post: "away." },
-                                    { q: 16, pre: "On the day in the countryside, Anita almost fell off a", post: "." },
-                                    { q: 17, pre: "In the capital city, Anita saw a", post: "in a theatre." },
-                                    { q: 18, pre: "Anita enjoyed visiting a farm where", post: "is produced." },
-                                    { q: 19, pre: "Anita bought some", post: "as gifts." }
-                                ].map((item) => {
-                                    const isChecked = checkedStatus[3];
-                                    const val = answers[item.q] || '';
-                                    const correct = checkPart3Answer(item.q, val);
-                                    
-                                    let inputClass = "mx-2 px-3 py-1 border-b-2 bg-transparent text-center focus:outline-none transition-colors w-40 font-semibold text-primary ";
-                                    if (!isChecked) {
-                                        inputClass += "border-primary/50 focus:border-primary focus:shadow-[0_2px_10px_rgba(0,240,255,0.2)]";
-                                    } else {
-                                        inputClass += correct ? "border-accent text-accent bg-accent/10 rounded drop-shadow-[0_0_5px_rgba(0,255,159,0.3)]" : "border-danger text-danger bg-danger/10 rounded line-through opacity-80 drop-shadow-[0_0_5px_rgba(255,0,60,0.3)]";
-                                    }
-
-                                    return (
-                                        <div key={item.q} className="flex flex-wrap items-baseline">
-                                            <span className="w-8 font-bold text-slate-600 text-sm">({item.q})</span>
-                                            <span>{item.pre}</span>
-                                            <div className="relative inline-block">
-                                                <input 
-                                                    type="text" 
-                                                    value={val}
-                                                    onChange={(e) => handleAnswer(item.q, e.target.value)}
-                                                    disabled={isChecked}
-                                                    className={inputClass}
-                                                />
-                                                {isChecked && correct && <i className="fa-solid fa-check text-accent drop-shadow-[0_0_5px_rgba(0,255,159,0.8)] absolute -right-4 top-2 text-sm"></i>}
-                                                {isChecked && !correct && (
-                                                    <div className="absolute left-0 -bottom-6 text-xs font-bold text-black whitespace-nowrap bg-accent px-2 rounded shadow-[0_0_10px_rgba(0,255,159,0.5)] z-10">
-                                                        Req: {item.q===14?'waterfall':item.q===15?'shark':item.q===16?'horse':item.q===17?'musical/show':item.q===18?'sugar':'ring'}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <span>{item.post}</span>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                        {renderNavigationButtons(3)}
-                    </div>
-                </div>
-            );
-
-            const renderPart4 = () => (
-                <div className="max-w-4xl mx-auto p-4 py-8">
-                    <div className="bg-card rounded-2xl shadow-[0_0_30px_rgba(0,240,255,0.05)] border border-primary/20 p-6 md:p-8 mb-8">
-                        <h2 className="text-2xl font-display font-bold text-white mb-2 flex items-center gap-3">
-                            <span className="bg-primary text-black w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-[0_0_10px_rgba(0,240,255,0.5)]">4</span>
-                            Sector 4
-                        </h2>
-                        <p className="text-gray-400 mb-2 font-medium">Nodes 20 – 25. For each node, select the correct vector.</p>
-                        <p className="text-sm text-primary mb-8 bg-primary/10 p-3 rounded-lg border border-primary/20"><i className="fa-solid fa-microphone-lines text-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.8)] mr-2"></i>Incoming transmission: an interview with Vicky Prince, champion swimmer & coach.</p>
-
-                        <div className="space-y-8">
-                            {[
-                                { q: 20, prompt: "Vicky first went in for competitions because", opts: [{v:'A', t:'she had joined a swimming club.'}, {v:'B', t:'her parents were keen on swimming.'}, {v:'C', t:'her swimming teacher encouraged her.'}] },
-                                { q: 21, prompt: "As a teenager, Vicky’s training involved", opts: [{v:'A', t:'exercising on land as well as in the water.'}, {v:'B', t:'going without meals during the day.'}, {v:'C', t:'travelling to a pool once a day.'}] },
-                                { q: 22, prompt: "What did Vicky find hard about her training programme?", opts: [{v:'A', t:'She couldn’t go on school trips.'}, {v:'B', t:'She lost some of her friends.'}, {v:'C', t:'She missed lots of parties.'}] },
-                                { q: 23, prompt: "What helped Vicky to do well in the national finals?", opts: [{v:'A', t:'She was not expected to win.'}, {v:'B', t:'She trained harder than usual.'}, {v:'C', t:'She wanted to take a cup home.'}] },
-                                { q: 24, prompt: "As a swimming coach, Vicky thinks she’s best at teaching people", opts: [{v:'A', t:'to deal with failure.'}, {v:'B', t:'to improve their technique.'}, {v:'C', t:'to get swimming qualifications.'}] },
-                                { q: 25, prompt: "Why has Vicky started doing long-distance swimming?", opts: [{v:'A', t:'She needed to get fit again.'}, {v:'B', t:'She thought it would be fun.'}, {v:'C', t:'She wanted to do some travelling.'}] }
-                            ].map((item) => (
-                                <div key={item.q} className="border-b border-slate-700/50 pb-8 last:border-0">
-                                    <h3 className="text-lg font-semibold text-gray-100 mb-4">{item.q}. {item.prompt}</h3>
-                                    <div className="space-y-3 pl-4 md:pl-8">
-                                        {item.opts.map(opt => (
-                                            <React.Fragment key={opt.v}>
-                                                {renderOptionButton({ qNum: item.q, val: opt.v, text: opt.t })}
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        {renderNavigationButtons(4)}
-                    </div>
-                </div>
-            );
-
-            const renderResultsScreen = () => {
-                if(!resultsData) return null;
-                const { correctCount, total, percentage, sectionScores, recommendations } = resultsData;
-
-                return (
-                    <div className="max-w-5xl mx-auto p-4 py-8 animate-fade-in">
-                        <div className="glass-panel futuristic-border p-8 rounded-2xl shadow-xl">
-                            <div className="text-center mb-10">
-                                <h1 className="text-4xl font-display font-bold text-primary mb-4 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">Transmission Complete</h1>
-                                <p className="text-gray-300 text-lg">Diagnostics rendered, Operator <span className="text-accent">{user.name}</span>.</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                                <div className="col-span-1 bg-card rounded-2xl p-6 shadow-[0_0_20px_rgba(0,240,255,0.1)] border border-primary/30 flex flex-col items-center justify-center">
-                                    <div className="relative w-40 h-40 flex items-center justify-center">
-                                        <svg className="w-full h-full transform -rotate-90 absolute">
-                                            <circle cx="80" cy="80" r="70" stroke="#1E293B" strokeWidth="12" fill="none" />
-                                            <circle cx="80" cy="80" r="70" stroke={percentage >= 70 ? "#00FF9F" : percentage >= 50 ? "#FBBF24" : "#FF003C"} strokeWidth="12" fill="none" strokeDasharray="439.8" strokeDashoffset={439.8 - (439.8 * percentage) / 100} className="transition-all duration-1000 ease-out drop-shadow-[0_0_10px_currentColor]" strokeLinecap="round" />
-                                        </svg>
-                                        <div className="text-center">
-                                            <span className="text-4xl font-bold text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">{percentage}%</span>
-                                        </div>
-                                    </div>
-                                    <p className="mt-4 text-gray-400 font-medium text-center uppercase tracking-wider">System Sync</p>
-                                    <p className="text-2xl font-bold text-primary drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">{correctCount} / {total}</p>
-                                </div>
-
-                                <div className="col-span-1 md:col-span-2 bg-card rounded-2xl p-6 shadow-[0_0_20px_rgba(0,240,255,0.1)] border border-primary/30">
-                                    <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Sector Diagnostics</h3>
-                                    <div className="space-y-6">
-                                        {[
-                                            { part: 1, label: 'Sector 1: Image Matrices', score: sectionScores[1], total: 7 },
-                                            { part: 2, label: 'Sector 2: Short Vectors', score: sectionScores[2], total: 6 },
-                                            { part: 3, label: 'Sector 3: Data Injection', score: sectionScores[3], total: 6 },
-                                            { part: 4, label: 'Sector 4: Long Transmissions', score: sectionScores[4], total: 6 }
-                                        ].map(sec => {
-                                            const w = `${(sec.score / sec.total) * 100}%`;
-                                            return (
-                                                <div key={sec.part}>
-                                                    <div className="flex justify-between text-sm mb-1 font-medium">
-                                                        <span className="text-gray-300">{sec.label}</span>
-                                                        <span className="text-gray-400">{sec.score} / {sec.total}</span>
-                                                    </div>
-                                                    <div className="h-3 w-full bg-slate-800 border border-slate-700 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-primary rounded-full transition-all duration-1000 ease-out animate-bar shadow-[0_0_10px_#00F0FF]" style={{ width: w }}></div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-[#131A2A] to-[#050510] text-white rounded-2xl p-8 shadow-[0_0_20px_rgba(176,38,255,0.2)] border border-secondary/30 mb-8 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-secondary rounded-full mix-blend-screen filter blur-[80px] opacity-30 transform translate-x-1/2 -translate-y-1/2"></div>
-                                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 drop-shadow-[0_0_5px_rgba(176,38,255,0.8)]">
-                                    <i className="fa-solid fa-microchip text-secondary"></i> 8 Strategic Directives
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {recommendations.map((rec, idx) => (
-                                        <div key={idx} className="flex gap-3 bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-sm hover:border-secondary/50 transition-colors">
-                                            <div className="bg-secondary/20 border border-secondary text-secondary w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5 drop-shadow-[0_0_5px_rgba(176,38,255,0.8)]">{idx + 1}</div>
-                                            <p className="text-sm text-gray-300">{rec}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="flex justify-center mt-12">
-                                <button 
-                                    onClick={exportPDF}
-                                    disabled={generatingPDF}
-                                    className="px-8 py-4 rounded-xl font-bold text-black bg-gradient-to-r from-accent to-[#00B0FF] hover:shadow-[0_0_25px_rgba(0,255,159,0.6)] transition-all text-lg flex items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed uppercase tracking-wider"
-                                >
-                                    {generatingPDF ? (
-                                        <><i className="fa-solid fa-spinner fa-spin"></i> Encoding PDF...</>
-                                    ) : (
-                                        <><i className="fa-solid fa-file-pdf"></i> Download Uplink Report</>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
-
-            const renderPdfTemplate = () => {
-                if(!resultsData) return null;
-                const { correctCount, total, percentage, sectionScores } = resultsData;
-
-                return (
-                    <div id="pdf-content">
-                        {/* Header Notice */}
-                        <div style={{ backgroundColor: '#00FF9F', color: '#050510', padding: '15px', textAlign: 'center', fontWeight: 'bold', fontSize: '14px', borderRadius: '8px', marginBottom: '20px', boxShadow: '0 0 15px rgba(0,255,159,0.4)' }}>
-                            <i className="fa-brands fa-whatsapp" style={{marginRight: '8px', fontSize: '18px'}}></i>
-                            TRANSMIT PDF DATA VIA WHATSAPP TO MR. ROCHA FOR CREDIT: 33-3497-1997
-                        </div>
-
-                        {/* Title & Info */}
-                        <div style={{ borderBottom: '2px solid #1E293B', paddingBottom: '20px', marginBottom: '20px' }}>
-                            <h1 style={{ color: '#00F0FF', fontSize: '28px', margin: '0 0 10px 0', fontFamily: 'Space Grotesk, sans-serif', textShadow: '0 0 10px rgba(0,240,255,0.5)' }}>Mr. Rocha's English Class</h1>
-                            <h2 style={{ color: '#B026FF', fontSize: '20px', margin: '0 0 20px 0', textShadow: '0 0 10px rgba(176,38,255,0.5)' }}>B1 Listening Protocol - Official Uplink</h2>
-                            
-                            <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: '#131A2A', padding: '15px', borderRadius: '8px', border: '1px solid #1E293B' }}>
-                                <div>
-                                    <p style={{ margin: '0', color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Operator ID</p>
-                                    <p style={{ margin: '5px 0 0 0', color: '#e2e8f0', fontSize: '18px', fontWeight: 'bold' }}>{user.name}</p>
-                                </div>
-                                <div>
-                                    <p style={{ margin: '0', color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Star Date</p>
-                                    <p style={{ margin: '5px 0 0 0', color: '#e2e8f0', fontSize: '18px', fontWeight: 'bold' }}>{user.date}</p>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ margin: '0', color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>System Sync Score</p>
-                                    <p style={{ margin: '5px 0 0 0', color: percentage >= 60 ? '#00FF9F' : '#FF003C', fontSize: '22px', fontWeight: 'bold', textShadow: `0 0 10px ${percentage >= 60 ? 'rgba(0,255,159,0.5)' : 'rgba(255,0,60,0.5)'}` }}>{percentage}% ({correctCount}/{total})</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Charts Area */}
-                        <div style={{ marginBottom: '30px' }}>
-                            <h3 style={{ fontSize: '16px', color: '#00F0FF', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>Sector Diagnostics</h3>
-                            <div style={{ display: 'flex', gap: '20px', height: '120px', alignItems: 'flex-end', borderBottom: '1px solid #1E293B', paddingBottom: '10px' }}>
-                                {[
-                                    { part: 1, label: 'S1', score: sectionScores[1], total: 7 },
-                                    { part: 2, label: 'S2', score: sectionScores[2], total: 6 },
-                                    { part: 3, label: 'S3', score: sectionScores[3], total: 6 },
-                                    { part: 4, label: 'S4', score: sectionScores[4], total: 6 }
-                                ].map(sec => {
-                                    const h = `${(sec.score / sec.total) * 100}%`;
-                                    return (
-                                        <div key={sec.part} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <span style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>{sec.score}/{sec.total}</span>
-                                            <div style={{ width: '40px', height: '100px', backgroundColor: '#0f172a', borderRadius: '4px 4px 0 0', position: 'relative', border: '1px solid #1E293B', borderBottom: 'none' }}>
-                                                <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: h, backgroundColor: '#00F0FF', borderRadius: '4px 4px 0 0', boxShadow: '0 0 10px #00F0FF' }}></div>
-                                            </div>
-                                            <span style={{ fontSize: '14px', fontWeight: 'bold', marginTop: '5px', color: '#e2e8f0' }}>{sec.label}</span>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Recommendations */}
-                        <div style={{ backgroundColor: '#131A2A', padding: '20px', borderRadius: '8px', marginBottom: '30px', border: '1px solid #1E293B' }}>
-                            <h3 style={{ fontSize: '16px', color: '#B026FF', margin: '0 0 15px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Strategic Directives</h3>
-                            <ul style={{ margin: 0, paddingLeft: '20px', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.6' }}>
-                                {resultsData.recommendations.map((rec, i) => (
-                                    <li key={i} style={{ marginBottom: '8px' }}>{rec}</li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="pdf-page-break"></div>
-
-                        {/* Detailed Responses Header */}
-                        <h2 style={{ color: '#00F0FF', fontSize: '20px', borderBottom: '2px solid #1E293B', paddingBottom: '10px', margin: '30px 0 20px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Detailed Data Nodes</h2>
-
-                        {/* Detailed Responses Table */}
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead>
-                                <tr style={{ backgroundColor: '#131A2A', color: '#00F0FF', textAlign: 'left' }}>
-                                    <th style={{ padding: '10px', borderBottom: '2px solid #1E293B' }}>Node</th>
-                                    <th style={{ padding: '10px', borderBottom: '2px solid #1E293B' }}>Sector</th>
-                                    <th style={{ padding: '10px', borderBottom: '2px solid #1E293B' }}>Operator Input</th>
-                                    <th style={{ padding: '10px', borderBottom: '2px solid #1E293B' }}>Status</th>
-                                    <th style={{ padding: '10px', borderBottom: '2px solid #1E293B' }}>Req Parameter</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array.from({ length: 25 }, (_, i) => {
-                                    const q = i + 1;
-                                    let section = 1;
-                                    if(q >= 8 && q <= 13) section = 2;
-                                    if(q >= 14 && q <= 19) section = 3;
-                                    if(q >= 20 && q <= 25) section = 4;
-
-                                    const userAns = answers[q] || '-';
-                                    const correct = isCorrect(q);
-                                    let keyStr = ANSWER_KEYS[q];
-                                    if(section === 3) {
-                                        keyStr = q===14?'waterfall':q===15?'shark':q===16?'horse':q===17?'musical/show':q===18?'sugar':'ring';
-                                    }
-
-                                    return (
-                                        <tr key={q} style={{ borderBottom: '1px solid #1E293B', backgroundColor: i % 2 === 0 ? '#050510' : '#0B0F19' }}>
-                                            <td style={{ padding: '10px', fontWeight: 'bold', color: '#94a3b8' }}>{q}</td>
-                                            <td style={{ padding: '10px', color: '#64748b' }}>Sector {section}</td>
-                                            <td style={{ padding: '10px', fontWeight: 'bold', color: correct ? '#00FF9F' : '#FF003C' }}>{userAns}</td>
-                                            <td style={{ padding: '10px' }}>
-                                                {correct ? 
-                                                    <span style={{ color: '#00FF9F', fontWeight: 'bold', textShadow: '0 0 5px rgba(0,255,159,0.5)' }}>✓ SYNCED</span> : 
-                                                    <span style={{ color: '#FF003C', fontWeight: 'bold', textShadow: '0 0 5px rgba(255,0,60,0.5)' }}>✗ FAILED</span>
-                                                }
-                                            </td>
-                                            <td style={{ padding: '10px', color: '#cbd5e1' }}>{keyStr}</td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                        
-                        <div style={{ marginTop: '40px', textAlign: 'center', fontSize: '11px', color: '#475569', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                            Encoded via Mr. Rocha's Assessment Protocol • {new Date().toLocaleString()}
-                        </div>
-                    </div>
-                );
-            };
-
-            return (
-                <div className="font-sans text-gray-200 min-h-screen pb-20">
-                    {renderHeader()}
-                    {renderProgressBar()}
-                    
-                    <main>
-                        {step === 0 && renderIntroScreen()}
-                        {step === 1 && renderPart1()}
-                        {step === 2 && renderPart2()}
-                        {step === 3 && renderPart3()}
-                        {step === 4 && renderPart4()}
-                        {step === 5 && renderResultsScreen()}
-                    </main>
-
-                    {step === 5 && (
-                        <div id="pdf-container">
-                            {renderPdfTemplate()}
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+                pdf.save(`Mr_Rocha_B1_Listening_${document.getElementById('student-name').value.replace(/\s+/g, '_')}.pdf`);
+                
+                // Remove the "Generating" message
+                document.querySelector('.fixed.inset-0.z-\\[100\\]')?.remove();
+            }).catch(err => {
+                console.error("PDF Generation Error: ", err);
+                showMessage("An error occurred while generating the PDF. Please try again.");
+            });
+        }
     </script>
 </body>
 </html>
